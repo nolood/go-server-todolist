@@ -1,0 +1,61 @@
+# air.toml
+
+# entry file
+# Default is ./main.go
+# Dir = "."   # Uncomment if you want to set your own project root directory
+
+# autobuild on start
+[build]
+
+  # binary name. Default is the base directory name.
+  Bin = "obsly"
+
+  # watching dirs
+  Dir = [
+    "handlers",
+    "controllers",
+    "models",
+    "routes",
+    "utils",
+  ]
+
+  # watching files
+  Files = [
+    ".env",
+  ]
+
+  # this exclude dirs, after Dir
+  ExcludeDir = [
+    "vendor",
+    "frontend",
+  ]
+
+  # this exclude files, after Files
+  ExcludeFile = [
+    "*.log",
+  ]
+
+  # unconditionally add these go get
+  # GOPKGGet = ["github.com/gorilla/mux"]
+
+  # unconditionally add these go build flag
+  # GoBuildFlags = []
+
+  # unconditionally set these environment variables
+  # Env = []
+
+  # command after built. e.g: "cp", "mv", "cmd.exe, powershell.exe"
+  # Uncomment if you need
+  # Run = "cp"
+
+  # -p for Open in default browser
+  # Uncomment if you need
+  # OpenInBrowser = false
+
+  # build and run custom script. e.g: "make", "bash", "cmd.exe"
+  # Uncomment if you need
+  # CustomBuildCommand = "make build"
+
+  # use 'go install' to install your binary
+  # Use it if you're not using 'Run'
+  # Install = true
