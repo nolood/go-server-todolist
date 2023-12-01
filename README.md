@@ -11,10 +11,16 @@ air
 ```sh
 export GOBIN=$(go env GOMODCACHE)/bin
 ```
+
+#### Need to install
+```sh
+go install github.com/cosmtrek/air@latest
+```
+
 #### Try to make
 
 ```sh
-go install github.com/cosmtrek/air@latest
+$(go env GOMODCACHE)/bin/air
 ```
 
 #### Restart terminal and 
