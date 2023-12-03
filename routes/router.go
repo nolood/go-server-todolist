@@ -11,8 +11,10 @@ func SetupRouter() *chi.Mux {
 	r.Use(middleware.Logger)
 
 	tasks := controllers.InitTaskRouter()
+	users := controllers.InitUserRouter()
 
 	r.Mount("/tasks", tasks)
+	r.Mount("/users", users)
 
 	return r
 }

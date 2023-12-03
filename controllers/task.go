@@ -8,7 +8,7 @@ import (
 func InitTaskRouter() *chi.Mux {
 	r := chi.NewRouter()
 
-	r.Get("/", tasks.GetAllTasks)
+	r.Get("/", handlers.GetAllTasks)
 
 	return r
 }

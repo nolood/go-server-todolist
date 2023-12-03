@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
+	"go-server/internal/storage/postgres"
 	"go-server/routes"
 	"log"
 	"net/http"
@@ -16,6 +17,8 @@ import (
 
 func main() {
 	r := routes.SetupRouter()
+
+	postgres.CreateSchemas()
 
 	start(r)
 }

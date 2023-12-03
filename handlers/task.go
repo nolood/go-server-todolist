@@ -1,10 +1,8 @@
-package tasks
+package handlers
 
-import "net/http"
-
-func SendMessage(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World!"))
-}
+import (
+	"net/http"
+)
 
 func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("You get all tasks !!!"))
