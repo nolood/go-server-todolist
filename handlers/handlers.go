@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/go-chi/render"
 	"github.com/go-pg/pg/v10"
 	"go-server/internal/storage/postgres"
+	"io"
 	"log"
 )
 
@@ -24,5 +26,8 @@ func toJson(model any) []byte {
 	return result
 }
 
-func fromJson(model any) {
+func fromBody(body io.ReadCloser, model interface{}) error {
+	err := render.DecodeJSON(body, &model)
+
+	return err
 }

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"go-server/internal/storage/postgres"
-	"io"
+	"go-server/models"
 	"log"
 	"net/http"
 )
@@ -20,10 +20,13 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+
+	var user models.CreateUserDto
+	err := fromBody(r.Body, &user)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
-	log.Println(string(body))
-	w.Write([]byte(string(body)))
+
+	w.Write(toJson(user))
 }
