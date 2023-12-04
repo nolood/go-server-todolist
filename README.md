@@ -29,4 +29,7 @@ $(go env GOMODCACHE)/bin/air
 air
 ```
 
+![image](https://github.com/nolood/social-network-rest-api/assets/124226446/0c4070b8-1ef7-42c9-a707-9b96c58f845b)
+
+
 
