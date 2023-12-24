@@ -1,9 +1,10 @@
 package routes
 
 import (
+	"go-server/controllers"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"go-server/controllers"
 )
 
 func SetupRouter() *chi.Mux {
@@ -11,11 +12,11 @@ func SetupRouter() *chi.Mux {
 	r.Use(middleware.Logger)
 	r.Use(middleware.AllowContentType("application/json"))
 
-	tasks := controllers.InitTaskRouter()
 	users := controllers.InitUserRouter()
+	auth := controllers.InitAuthRouter()
 
-	r.Mount("/tasks", tasks)
 	r.Mount("/users", users)
+	r.Mount("/auth", auth)
 
 	return r
 }

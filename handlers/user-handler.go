@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"fmt"
 	"go-server/internal/storage/postgres"
 	"log"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -18,19 +21,24 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write(toJson(users))
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func CreateUser(user *postgres.User) error {
 
-	var user postgres.User
-	err := fromBody(r.Body, &user)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
+	isUser := postgres.User{}
+
+	db.Model(&isUser).Where("username = ?", user.Username).First()
+
+	if isUser.Username != "" {
+		return fmt.Errorf("user_exist")
 	}
 
-	_, err = db.Model(&user).Returning("*").Insert()
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		return err
 	}
 
-	w.Write(toJson(user))
+	user.Password = string(hashedPassword)
+
+	_, err = db.Model(user).Insert()
+
+	return err
 }
