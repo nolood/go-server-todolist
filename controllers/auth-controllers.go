@@ -9,7 +9,7 @@ import (
 func InitAuthRouter() *chi.Mux {
 	r := chi.NewRouter()
 
-	// r.Post("/login", handlers.)
+	r.Post("/login", handlers.Login)
 	r.Post("/register", handlers.Register)
 
 	return r

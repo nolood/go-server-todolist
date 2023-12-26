@@ -11,6 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Claims struct {
@@ -60,6 +61,37 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	err = CreateUser(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	token, err := generateToken(user.Username, user.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte(token))
+}
+
+func Login(w http.ResponseWriter, r *http.Request) {
+	var isUser postgres.User
+	err := fromBody(r.Body, &isUser)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var user postgres.User
+
+	err = postgres.Db.Model(&user).Where("username = ?", isUser.Username).Select()
+	if err != nil {
+		http.Error(w, "User not found", http.StatusBadRequest)
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(isUser.Password))
+	if err != nil {
+		http.Error(w, "Wrong password", http.StatusBadRequest)
 		return
 	}
 
