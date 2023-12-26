@@ -13,7 +13,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	var users []postgres.User
 
-	err := db.Model(&users).Select()
+	err := postgres.Db.Model(&users).Select()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func CreateUser(user *postgres.User) error {
 
 	isUser := postgres.User{}
 
-	db.Model(&isUser).Where("username = ?", user.Username).First()
+	postgres.Db.Model(&isUser).Where("username = ?", user.Username).First()
 
 	if isUser.Username != "" {
 		return fmt.Errorf("user_exist")
@@ -38,7 +38,7 @@ func CreateUser(user *postgres.User) error {
 
 	user.Password = string(hashedPassword)
 
-	_, err = db.Model(user).Insert()
+	_, err = postgres.Db.Model(user).Insert()
 
 	return err
 }

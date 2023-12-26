@@ -1,43 +1,27 @@
 package postgres
 
 import (
+	"go-server/internal/config"
+
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	"github.com/joho/godotenv"
-	"log"
-	"os"
+	"github.com/spf13/viper"
 )
 
-func ConnectDb() *pg.DB {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	port := os.Getenv("DB_PORT")
-	if port == "" {
-		log.Fatal("Can't get DB_PORT")
-	}
-	user := os.Getenv("DB_USER")
-	if user == "" {
-		log.Fatal("Can't get DB_USER")
-	}
-	pass := os.Getenv("DB_PASSWORD")
-	if pass == "" {
-		log.Fatal("Can't get DB_PASSWORD")
-	}
-	name := os.Getenv("DB_NAME")
-	if name == "" {
-		log.Fatal("Can't get DB_NAME")
-	}
+var Db *pg.DB
 
-	db := pg.Connect(&pg.Options{
-		Addr:     port,
+func ConnectDb() {
+	port := viper.GetString("DB_PORT")
+	user := viper.GetString("DB_USER")
+	pass := viper.GetString("DB_PASSWORD")
+	name := viper.GetString("DB_NAME")
+
+	Db = pg.Connect(&pg.Options{
+		Addr:     ":" + port,
 		User:     user,
 		Password: pass,
 		Database: name,
 	})
-
-	return db
 }
 
 func CreateSchemas() {
@@ -45,15 +29,14 @@ func CreateSchemas() {
 		(*User)(nil),
 	}
 
-	log.Println("Creating schemas...")
+	config.Logger.Info("Creating tables...")
 
 	for _, model := range models {
-		err := ConnectDb().Model(model).CreateTable(&orm.CreateTableOptions{
+		err := Db.Model(model).CreateTable(&orm.CreateTableOptions{
 			IfNotExists: true,
 		})
-		log.Println("Successfully created table: ", model)
 		if err != nil {
-			log.Fatal(err)
+			config.Logger.Error(err.Error())
 		}
 	}
 }

@@ -10,7 +10,6 @@ func InitUserRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Get("/", handlers.GetAllUsers)
-	// r.Post("/", handlers.CreateUser)
 
 	return r
 }

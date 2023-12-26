@@ -10,6 +10,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
+	"github.com/spf13/viper"
 )
 
 type Claims struct {
@@ -19,11 +20,7 @@ type Claims struct {
 }
 
 func generateToken(username string, id uuid.UUID) (string, error) {
-	secret := os.Getenv("SECRET_KEY")
-	if secret == "" {
-		log.Fatal("Can't get SECRET_KEY")
-		return "", fmt.Errorf("can't get SECRET_KEY")
-	}
+	secret := viper.GetString("SECRET_KEY")
 
 	claims := Claims{
 		Username: username,

@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
+	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
 	"go-server/routes"
 	"log"
@@ -13,28 +12,31 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/spf13/viper"
 )
 
 func main() {
-	r := routes.SetupRouter()
+	config.MustLoad()
+	config.InitLogger()
 
+	postgres.ConnectDb()
 	postgres.CreateSchemas()
+	r := routes.SetupRouter()
 
 	start(r)
 }
 
 func start(r *chi.Mux) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	port := os.Getenv("PORT")
-
+	var err error
+	port := viper.GetString("PORT")
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: r,
 	}
+
+	config.Logger.Info("Starting server on port " + port)
 
 	go func() {
 		if err = srv.ListenAndServe(); err != nil && !errors.Is(http.ErrServerClosed, err) {
