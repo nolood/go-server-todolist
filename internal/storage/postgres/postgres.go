@@ -27,6 +27,9 @@ func ConnectDb() {
 func CreateSchemas() {
 	models := []interface{}{
 		(*User)(nil),
+		(*ArticleType)(nil),
+		(*Article)(nil),
+		(*Record)(nil),
 	}
 
 	config.Logger.Info("Creating tables...")
