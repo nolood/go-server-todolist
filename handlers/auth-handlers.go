@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"fmt"
+	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -36,24 +35,28 @@ func generateToken(username string, id uuid.UUID) (string, error) {
 	return token.SignedString([]byte(secret))
 }
 
-func jwtAuthenticator(token *jwt.Token) (interface{}, error) {
-	secret := os.Getenv("SECRET_KEY")
-	if secret == "" {
-		log.Fatal("Can't get SECRET_KEY")
-		return nil, fmt.Errorf("can't get SECRET_KEY")
-	}
-
-	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-		return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-	}
-
-	return []byte(secret), nil
-}
+//func jwtAuthenticator(token *jwt.Token) (interface{}, error) {
+//	secret := os.Getenv("SECRET_KEY")
+//	if secret == "" {
+//		log.Fatal("Can't get SECRET_KEY")
+//		return nil, fmt.Errorf("can't get SECRET_KEY")
+//	}
+//
+//	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+//		return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+//	}
+//
+//	return []byte(secret), nil
+//}
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	var user postgres.User
+
 	err := fromBody(r.Body, &user)
+	log.Println(user)
+
 	if err != nil {
+		config.Logger.Error(err.Error())
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}

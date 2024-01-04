@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/go-chi/cors"
 	"go-server/controllers"
 
 	"github.com/go-chi/chi/v5"
@@ -11,6 +12,14 @@ func SetupRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.AllowContentType("application/json"))
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 
 	users := controllers.InitUserRouter()
 	auth := controllers.InitAuthRouter()

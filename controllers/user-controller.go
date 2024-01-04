@@ -1,10 +1,9 @@
 package controllers
 
 import (
+	"github.com/go-chi/chi/v5"
 	"go-server/handlers"
 	"go-server/middlewares"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func InitUserRouter() *chi.Mux {

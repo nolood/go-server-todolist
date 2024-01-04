@@ -9,10 +9,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	Env string `yaml:"env" env-default:"dev"`
-}
-
 var (
 	Logger   *slog.Logger
 	envLocal = "local"

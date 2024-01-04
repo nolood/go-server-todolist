@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,13 +18,13 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	userId, ok := r.Context().Value("user_id").(uuid.UUID)
-	if !ok {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	log.Println(userId)
+	//userId, ok := r.Context().Value("user_id").(uuid.UUID)
+	//if !ok {
+	//	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	//	return
+	//}
+	//
+	//log.Println(userId)
 
 	w.Write(toJson(users))
 }
