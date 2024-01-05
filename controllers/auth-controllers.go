@@ -11,6 +11,7 @@ func InitAuthRouter() *chi.Mux {
 
 	r.Post("/login", handlers.Login)
 	r.Post("/register", handlers.Register)
+	r.Post("/vkminiapp", handlers.Vkminiapp)
 
 	return r
 }

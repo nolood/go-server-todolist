@@ -106,3 +106,30 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(token))
 }
+
+func Vkminiapp(w http.ResponseWriter, r *http.Request) {
+	var isUser postgres.User
+
+	err := fromBody(r.Body, &isUser)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	err = postgres.Db.Model(&isUser).Where("vkid = ?", isUser.VKID).Select()
+	if err != nil {
+		err = CreateUser(&isUser)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+
+	token, err := generateToken(isUser.Username, isUser.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte(token))
+}
