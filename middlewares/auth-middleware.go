@@ -6,14 +6,13 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
 	"github.com/spf13/viper"
 )
 
 type Claims struct {
 	jwt.StandardClaims
-	Id       uuid.UUID `json:"id"`
-	Username string    `json:"username"`
+	Id       uint64 `json:"id"`
+	Username string `json:"username"`
 }
 
 func AuthMiddleware() func(http.Handler) http.Handler {

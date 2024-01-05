@@ -1,13 +1,16 @@
 package postgres
 
+import "gorm.io/gorm"
+
 type ArticleType struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uint64 `gorm:"autoIncrement"`
+	Name string
 }
 
 type Article struct {
-	ID            int         `json:"id"`
-	Icon          string      `json:"icon"`
-	ArticleTypeID int         `pg:"alias:type_id"`
-	ArticleType   ArticleType `pg:"rel:has-one,alias:type" json:"type"`
+	gorm.Model
+	ID            uint64 `gorm:"autoIncrement"`
+	Icon          string
+	ArticleTypeID uint
+	ArticleType   ArticleType
 }

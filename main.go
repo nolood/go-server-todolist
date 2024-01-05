@@ -22,7 +22,6 @@ func main() {
 	config.InitLogger()
 
 	postgres.ConnectDb()
-	postgres.CreateSchemas()
 	r := routes.SetupRouter()
 
 	start(r)

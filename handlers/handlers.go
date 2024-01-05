@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/http"
@@ -26,8 +25,8 @@ func fromBody(body io.ReadCloser, model interface{}) error {
 	return err
 }
 
-func getUserId(r *http.Request) (uuid.UUID, error) {
-	userId, ok := r.Context().Value("user_id").(uuid.UUID)
+func getUserId(r *http.Request) (uint64, error) {
+	userId, ok := r.Context().Value("user_id").(uint64)
 	if !ok {
 		return userId, fmt.Errorf("user ID not found")
 	}

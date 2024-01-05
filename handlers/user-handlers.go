@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"go-server/internal/storage/postgres"
-	"log"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -13,18 +12,9 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	var users []postgres.User
 
-	err := postgres.Db.Model(&users).Select()
-	if err != nil {
-		log.Fatal(err)
-	}
+	query := postgres.Db.Table("users")
 
-	//userId, ok := r.Context().Value("user_id").(uuid.UUID)
-	//if !ok {
-	//	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	//	return
-	//}
-	//
-	//log.Println(userId)
+	query = query.Find(&users)
 
 	w.Write(toJson(users))
 }
@@ -33,7 +23,11 @@ func CreateUser(user *postgres.User) error {
 
 	isUser := postgres.User{}
 
-	postgres.Db.Model(&isUser).Where("username = ?", user.Username).First()
+	query := postgres.Db.Table("users")
+
+	query = query.Where("username = ?", user.Username)
+
+	query.Find(&isUser)
 
 	if isUser.Username != "" {
 		return fmt.Errorf("user_exist")
@@ -46,7 +40,7 @@ func CreateUser(user *postgres.User) error {
 
 	user.Password = string(hashedPassword)
 
-	_, err = postgres.Db.Model(user).Insert()
+	postgres.Db.Table("users").Create(&user)
 
 	return err
 }

@@ -1,46 +1,37 @@
 package postgres
 
 import (
+	"fmt"
 	"go-server/internal/config"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
-	"github.com/go-pg/pg/v10"
-	"github.com/go-pg/pg/v10/orm"
 	"github.com/spf13/viper"
 )
 
-var Db *pg.DB
+var Db *gorm.DB
 
 func ConnectDb() {
 	port := viper.GetString("DB_PORT")
 	user := viper.GetString("DB_USER")
 	pass := viper.GetString("DB_PASSWORD")
 	name := viper.GetString("DB_NAME")
+	host := viper.GetString("DB_HOST")
 
-	Db = pg.Connect(&pg.Options{
-		Addr:     ":" + port,
-		User:     user,
-		Password: pass,
-		Database: name,
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, pass, name)
+
+	var err error
+	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		QueryFields: true,
 	})
-}
-
-func CreateSchemas() {
-	models := []interface{}{
-		(*User)(nil),
-		(*ArticleType)(nil),
-		(*Article)(nil),
-		(*Record)(nil),
-		(*Bill)(nil),
+	if err != nil {
+		config.Logger.Info(err.Error())
 	}
 
-	config.Logger.Info("Creating tables...")
-
-	for _, model := range models {
-		err := Db.Model(model).CreateTable(&orm.CreateTableOptions{
-			IfNotExists: true,
-		})
-		if err != nil {
-			config.Logger.Error(err.Error())
-		}
+	err = Db.AutoMigrate(&User{}, &ArticleType{}, &Article{}, &Record{}, &Bill{})
+	if err != nil {
+		config.Logger.Error(err.Error())
+		return
 	}
+
 }

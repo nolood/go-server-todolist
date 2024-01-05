@@ -25,12 +25,9 @@ func CreateBill(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = postgres.Db.Model(&bill).Insert()
-	if err != nil {
-		config.Logger.Error(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
+	query := postgres.Db.Table("bills")
+
+	query = query.Create(&bill)
 
 	w.Write(toJson(bill))
 }
@@ -43,16 +40,13 @@ func GetAllBills(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var bills []*postgres.Bill
+	var bills []postgres.Bill
 
-	err = postgres.Db.Model(&bills).
-		Relation("User").
-		Where("user_id = ?", userId).Select()
-	if err != nil {
-		config.Logger.Error(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
+	query := postgres.Db.Table("bills")
+
+	query = query.Where("user_id = ?", userId)
+
+	query.Find(&bills)
 
 	w.Write(toJson(bills))
 }

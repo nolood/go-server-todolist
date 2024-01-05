@@ -1,11 +1,14 @@
 package postgres
 
+import "gorm.io/gorm"
+
 type Record struct {
-	ID          int `json:"id"`
+	gorm.Model
+	ID          uint64 `gorm:"autoIncrement"`
 	ArticleID   int
-	Article     Article `pg:"rel:has-one" json:"article"`
-	Description string  `json:"description"`
-	BillID      int     `json:"bill_id"`
-	Bill        Bill    `pg:"rel:has-one" json:"bill"`
-	Amount      int     `json:"amount"`
+	Article     Article
+	Description string
+	BillID      int
+	Bill        Bill
+	Amount      int
 }
