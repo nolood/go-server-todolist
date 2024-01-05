@@ -10,4 +10,5 @@ type User struct {
 	VKID       int64     `json:"vk_id"`
 	Email      string    `pg:"unique:true" json:"email"`
 	Phone      string    `json:"phone"`
+	Bills      []*Bill   `pg:"rel:has-many" json:"bills"`
 }

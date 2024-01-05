@@ -30,6 +30,7 @@ func CreateSchemas() {
 		(*ArticleType)(nil),
 		(*Article)(nil),
 		(*Record)(nil),
+		(*Bill)(nil),
 	}
 
 	config.Logger.Info("Creating tables...")
