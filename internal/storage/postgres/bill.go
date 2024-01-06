@@ -6,10 +6,10 @@ import (
 
 type Bill struct {
 	gorm.Model
-	ID      uint64 `gorm:"autoIncrement"`
-	User    User   `gorm:"foreignKey:UserID"`
-	UserID  uint64
-	Balance float32
-	Records []Record
-	Title   string
+	ID      uint64   `gorm:"autoIncrement" json:"id"`
+	User    User     `gorm:"foreignKey:UserID" json:"user"`
+	UserID  uint64   `json:"user_id"`
+	Balance float32  `json:"balance"`
+	Records []Record `json:"records"`
+	Title   string   `json:"title"`
 }

@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -49,6 +50,8 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			}
 
 			userID := myClaims.Id
+
+			log.Println(userID)
 
 			ctx := context.WithValue(r.Context(), "user_id", userID)
 

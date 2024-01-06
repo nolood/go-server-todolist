@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"go-server/internal/storage/postgres"
+	"log"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -41,6 +42,8 @@ func CreateUser(user *postgres.User) error {
 	user.Password = string(hashedPassword)
 
 	postgres.Db.Table("users").Create(&user)
+
+	log.Println(user)
 
 	return err
 }

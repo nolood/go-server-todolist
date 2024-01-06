@@ -106,11 +106,11 @@ func Vkminiapp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var user postgres.User
+
 	query := postgres.Db.Table("users")
 
 	query = query.Where("vk_id = ?", isUser.VKID)
-
-	var user postgres.User
 
 	query.Find(&user)
 
@@ -120,9 +120,11 @@ func Vkminiapp(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		user = isUser
 	}
 
-	token, err := generateToken(isUser.Username, isUser.ID)
+	token, err := generateToken(user.Username, user.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
