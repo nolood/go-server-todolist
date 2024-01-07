@@ -3,11 +3,13 @@ package handlers
 import (
 	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
+	"gorm.io/gorm"
 	"net/http"
 	"time"
 )
 
 type CreateBillParam struct {
+	gorm.Model
 	ID      uint64  `json:"id"`
 	Title   string  `json:"title"`
 	Balance float64 `json:"balance"`
@@ -34,6 +36,15 @@ func CreateBill(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := postgres.Db.Table("bills")
+
+	var count int64
+
+	query.Where("user_id = ?", userId).Count(&count)
+
+	if count >= 6 {
+		http.Error(w, "You can't create more than 6 bills", http.StatusBadRequest)
+		return
+	}
 
 	query = query.Create(&bill)
 
