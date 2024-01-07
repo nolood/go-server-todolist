@@ -13,6 +13,7 @@ func InitBillRouter() *chi.Mux {
 
 	r.Post("/", handlers.CreateBill)
 	r.Get("/", handlers.GetAllBills)
+	r.Get("/{id}", handlers.GetBill)
 
 	return r
 }
