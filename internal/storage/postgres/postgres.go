@@ -34,4 +34,6 @@ func ConnectDb() {
 		return
 	}
 
+	createDefaultArticles()
+
 }

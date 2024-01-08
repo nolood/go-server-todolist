@@ -24,10 +24,12 @@ func SetupRouter() *chi.Mux {
 	users := controllers.InitUserRouter()
 	auth := controllers.InitAuthRouter()
 	bills := controllers.InitBillRouter()
+	articles := controllers.InitArticleRouter()
 
 	r.Mount("/users", users)
 	r.Mount("/auth", auth)
 	r.Mount("/bills", bills)
+	r.Mount("/articles", articles)
 
 	return r
 }
