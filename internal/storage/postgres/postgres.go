@@ -28,7 +28,7 @@ func ConnectDb() {
 		config.Logger.Info(err.Error())
 	}
 
-	err = Db.AutoMigrate(&User{}, &Article{}, &Record{}, &Bill{})
+	err = Db.AutoMigrate(&User{}, &Article{}, &Record{}, &Bill{}, &RecordType{})
 	if err != nil {
 		config.Logger.Error(err.Error())
 		return
