@@ -1,12 +1,7 @@
 package postgres
 
-import (
-	"gorm.io/gorm"
-)
-
 type User struct {
-	gorm.Model
-	ID         uint64 `gorm:"autoIncrement" json:"id"`
+	Model
 	Username   string `json:"username"`
 	Password   string `json:"password"`
 	TelegramID int64  `json:"telegram_id"`

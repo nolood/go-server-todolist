@@ -5,6 +5,7 @@ import (
 	"go-server/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -36,4 +37,11 @@ func ConnectDb() {
 
 	createDefaultArticles()
 
+}
+
+type Model struct {
+	ID        uint64         `gorm:"primarykey,autoIncrement" json:"id"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }

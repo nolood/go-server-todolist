@@ -1,18 +1,13 @@
 package postgres
 
-import (
-	"gorm.io/gorm"
-)
-
 type Article struct {
-	gorm.Model
-	ID        uint64 `gorm:"autoIncrement"`
-	Icon      string
-	Title     string
-	Color     string
-	IsDefault bool
-	UserID    *uint64
-	User      *User
+	Model
+	Icon      string  `json:"icon"`
+	Title     string  `json:"title"`
+	Color     string  `json:"color"`
+	IsDefault bool    `json:"is_default"`
+	UserID    *uint64 `json:"user_id"`
+	User      *User   `json:"user"`
 }
 
 func createDefaultArticles() {

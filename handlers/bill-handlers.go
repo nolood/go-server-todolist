@@ -111,6 +111,43 @@ func GetBill(w http.ResponseWriter, r *http.Request) {
 	query = query.Where("id = ?", billID)
 
 	query.Find(&bill)
+	if query.Error != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
 
-	w.Write(toJson(bill))
+	var records []postgres.Record
+
+	query = postgres.Db.Table("records")
+
+	query = query.Where("bill_id = ?", billID).Preload("RecordType")
+
+	query.Find(&records)
+	if query.Error != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	type Response struct {
+		GetBillParam
+		TotalIncome  int `json:"total_income"`
+		TotalExpense int `json:"total_expense"`
+	}
+
+	response := Response{
+		GetBillParam: bill,
+		TotalIncome:  0.00,
+		TotalExpense: 0.00,
+	}
+
+	for _, record := range records {
+		switch record.RecordType.Value {
+		case "income":
+			response.TotalIncome += record.Amount
+		case "expense":
+			response.TotalExpense += record.Amount
+		}
+	}
+
+	w.Write(toJson(response))
 }
