@@ -45,26 +45,14 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var bill postgres.Bill
-
-	query = postgres.Db.Table("bills")
-	result = query.Where("user_id = ?", userId).Find(&bill)
-	if result.Error != nil {
-		config.Logger.Error(result.Error.Error())
+	err = changeBillBalance(record.BillID, userId, float32(record.Amount), record.RecordTypeID)
+	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	query = postgres.Db.Table("records")
 	query.Create(&record)
-
-	if record.RecordTypeID == 1 {
-		bill.Balance += float32(record.Amount)
-	} else if record.RecordTypeID == 2 {
-		bill.Balance -= float32(record.Amount)
-	}
-
-	postgres.Db.Save(&bill)
 
 	var recordResponse CreateRecordParam
 

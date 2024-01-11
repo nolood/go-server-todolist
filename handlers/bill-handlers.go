@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
 	"gorm.io/gorm"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -150,4 +152,27 @@ func GetBill(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(toJson(response))
+}
+
+func changeBillBalance(billID uint64, userID uint64, amount float32, Type uint64) error {
+	var bill postgres.Bill
+
+	query := postgres.Db.Table("bills")
+	query.Where("id = ?", billID).Where("user_id = ?", userID).Find(&bill)
+	if query.Error != nil {
+		return fmt.Errorf("can't find bill")
+	}
+
+	log.Println(bill.Balance, "balance")
+	if Type == 1 {
+		bill.Balance += amount
+	} else {
+		bill.Balance -= amount
+	}
+
+	log.Println(bill.Balance, "balance")
+
+	postgres.Db.Save(&bill)
+
+	return nil
 }
