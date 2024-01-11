@@ -4,7 +4,6 @@ import (
 	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
 	"gorm.io/gorm"
-	"log"
 	"net/http"
 )
 
@@ -38,8 +37,6 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(len(article.Title))
-
 	if len(article.Title) > 38 {
 		http.Error(w, "Title should be less than 20", http.StatusBadRequest)
 		return
@@ -55,8 +52,6 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "You can't create more than 5 articles", http.StatusBadRequest)
 		return
 	}
-
-	log.Println(article)
 
 	query = query.Create(&article)
 

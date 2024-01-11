@@ -11,6 +11,7 @@ func InitRecordRouter() *chi.Mux {
 	r.Use(middlewares.AuthMiddleware())
 
 	r.Post("/", handlers.CreateRecord)
+	r.Get("/{billId}", handlers.GetRecordsByBillId)
 
 	return r
 }

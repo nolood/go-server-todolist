@@ -3,7 +3,6 @@ package handlers
 import (
 	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
-	"log"
 	"net/http"
 	"time"
 
@@ -38,7 +37,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	var user postgres.User
 
 	err := fromBody(r.Body, &user)
-	log.Println(user)
 
 	if err != nil {
 		config.Logger.Error(err.Error())

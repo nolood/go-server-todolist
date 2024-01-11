@@ -6,7 +6,6 @@ import (
 	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
 	"gorm.io/gorm"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -163,14 +162,11 @@ func changeBillBalance(billID uint64, userID uint64, amount float32, Type uint64
 		return fmt.Errorf("can't find bill")
 	}
 
-	log.Println(bill.Balance, "balance")
 	if Type == 1 {
 		bill.Balance += amount
 	} else {
 		bill.Balance -= amount
 	}
-
-	log.Println(bill.Balance, "balance")
 
 	postgres.Db.Save(&bill)
 

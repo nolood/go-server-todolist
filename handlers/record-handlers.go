@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"github.com/go-chi/chi/v5"
 	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
 	"net/http"
+	"strconv"
 )
 
 type CreateRecordParam struct {
@@ -65,4 +67,40 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(toJson(recordResponse))
+}
+
+type RecordResponse struct {
+	postgres.Model
+	Amount       int                 `json:"amount"`
+	Description  string              `json:"description"`
+	Article      postgres.Article    `json:"article"`
+	ArticleID    uint64              `json:"article_id"`
+	BillID       uint64              `json:"bill_id"`
+	RecordType   postgres.RecordType `json:"type"`
+	RecordTypeID uint64              `json:"type_id"`
+	Date         string              `json:"date"`
+}
+
+func GetRecordsByBillId(w http.ResponseWriter, r *http.Request) {
+	billIdParam := chi.URLParam(r, "billId")
+
+	billID, err := strconv.Atoi(billIdParam)
+	if err != nil {
+		config.Logger.Error(err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var records []RecordResponse
+
+	query := postgres.Db.Table("records")
+	query = query.Where("bill_id = ?", billID)
+	query.Preload("Article").Preload("RecordType").Find(&records)
+	if query.Error != nil {
+		config.Logger.Error(query.Error.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	w.Write(toJson(records))
 }
