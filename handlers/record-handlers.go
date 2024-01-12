@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"go-server/internal/config"
 	"go-server/internal/storage/postgres"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -34,6 +35,12 @@ func CreateRecord(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		config.Logger.Error(err.Error())
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	if len(record.Description) > 500 {
+		log.Println(len(record.Description))
+		http.Error(w, "Description should be less than 300", http.StatusBadRequest)
 		return
 	}
 

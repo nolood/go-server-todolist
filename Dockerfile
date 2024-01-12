@@ -1,14 +1,13 @@
-FROM golang:latest
+FROM golang:1.21
 
 WORKDIR /app
 
 COPY go.mod .
-COPY go.sum .
 
-RUN go mod download
+RUN go mod tidy
 
 COPY . .
 
-RUN go get -u github.com/cosmtrek/air
+EXPOSE 5000
 
-CMD ["air", "-c", ".air.toml"]
+CMD ["go", "run", "main.go"]
