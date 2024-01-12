@@ -100,8 +100,21 @@ func GetRecordsByBillId(w http.ResponseWriter, r *http.Request) {
 
 	var records []RecordResponse
 
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	perPage, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || perPage < 1 {
+		perPage = 10
+	}
+
+	offset := (page - 1) * perPage
+
 	query := postgres.Db.Table("records")
 	query = query.Where("bill_id = ?", billID)
+	query = query.Offset(offset).Limit(perPage)
 	query.Preload("Article").Preload("RecordType").Find(&records)
 	if query.Error != nil {
 		config.Logger.Error(query.Error.Error())
