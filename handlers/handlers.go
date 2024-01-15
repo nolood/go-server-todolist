@@ -3,11 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-chi/render"
 	"io"
 	"log"
 	"net/http"
-
-	"github.com/go-chi/render"
 )
 
 func toJson(model any) []byte {

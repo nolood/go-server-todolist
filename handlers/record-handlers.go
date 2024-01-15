@@ -115,7 +115,8 @@ func GetRecordsByBillId(w http.ResponseWriter, r *http.Request) {
 	query := postgres.Db.Table("records")
 	query = query.Where("bill_id = ?", billID)
 	query = query.Offset(offset).Limit(perPage)
-	query.Preload("Article").Preload("RecordType").Find(&records)
+	query = query.Preload("Article").Preload("RecordType")
+	query.Order("created_at desc").Find(&records)
 	if query.Error != nil {
 		config.Logger.Error(query.Error.Error())
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)

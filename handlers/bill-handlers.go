@@ -80,7 +80,7 @@ func GetAllBills(w http.ResponseWriter, r *http.Request) {
 
 	query := postgres.Db.Table("bills")
 
-	query = query.Where("user_id = ?", userId)
+	query = query.Where("user_id = ?", userId).Order("created_at")
 
 	query.Find(&bills)
 

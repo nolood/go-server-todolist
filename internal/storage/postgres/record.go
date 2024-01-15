@@ -17,3 +17,20 @@ type Record struct {
 	RecordTypeID uint64     `json:"type_id"`
 	Date         string     `json:"date"`
 }
+
+func createDefaultRecordTypes() {
+	recordTypes := []RecordType{
+		{Value: "income"},
+		{Value: "expense"},
+	}
+
+	var count int64
+
+	query := Db.Table("record_types")
+	query.Count(&count)
+
+	if count == 0 {
+		Db.Create(recordTypes)
+	}
+
+}

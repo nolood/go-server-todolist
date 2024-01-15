@@ -36,7 +36,7 @@ func ConnectDb() {
 	}
 
 	createDefaultArticles()
-
+	createDefaultRecordTypes()
 }
 
 type Model struct {
