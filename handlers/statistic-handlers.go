@@ -158,11 +158,21 @@ func GetStatistic(w http.ResponseWriter, r *http.Request) {
 		profit = make(map[int]int)
 		loss = make(map[int]int)
 		for unit, incomeAmount := range income {
-			profit[unit] = incomeAmount - expense[unit]
-			loss[unit] = -profit[unit]
+			expenseAmount := expense[unit]
+
+			profitAmount := incomeAmount - expenseAmount
+			lossAmount := expenseAmount - incomeAmount
+
+			if lossAmount > 0 {
+				profitAmount = 0
+			} else {
+				lossAmount = 0
+			}
+
+			profit[unit] = profitAmount
+			loss[unit] = lossAmount
 		}
 
-		// Очищаем groupedRecords и добавляем только 4 датасета
 		groupedRecords = make(map[string]map[int]int)
 		groupedRecords["Доход"] = income
 		groupedRecords["Расход"] = expense
@@ -191,13 +201,13 @@ func GetStatistic(w http.ResponseWriter, r *http.Request) {
 		var backgroundColor string
 		switch title {
 		case "Доход":
-			backgroundColor = "green.500" // Зеленый цвет (можно заменить на нужный)
+			backgroundColor = "green.500"
 		case "Расход":
-			backgroundColor = "red.500" // Красный цвет (можно заменить на нужный)
+			backgroundColor = "red.500"
 		case "Прибыль":
-			backgroundColor = "blue.500" // Синий цвет (можно заменить на нужный)
+			backgroundColor = "blue.500"
 		case "Убыток":
-			backgroundColor = "orange.500" // Оранжевый цвет (можно заменить на нужный)
+			backgroundColor = "orange.500"
 		default:
 			backgroundColor = colors[title]
 		}
