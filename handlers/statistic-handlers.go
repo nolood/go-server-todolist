@@ -32,6 +32,37 @@ func parseMonth(date string) int {
 	return month
 }
 
+func getYears() []int {
+	currentYear := time.Now().Year()
+	years := make([]int, 6)
+	for i := 0; i < 6; i++ {
+		years[i] = currentYear - 5 + i
+	}
+	return years
+}
+
+func getMonths() []string {
+	return []string{
+		"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+		"Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
+	}
+}
+
+func getLabels(period string, years []int, months []string) []string {
+	switch period {
+	case "year":
+		stringsYears := make([]string, 0, 6)
+		for _, num := range years {
+			stringsYears = append(stringsYears, strconv.Itoa(num))
+		}
+		return stringsYears
+	case "month":
+		return months
+	default:
+		return make([]string, 0)
+	}
+}
+
 func GetStatistic(w http.ResponseWriter, r *http.Request) {
 	var params GetStatisticParams
 
@@ -75,32 +106,9 @@ func GetStatistic(w http.ResponseWriter, r *http.Request) {
 
 	query.Find(&records)
 
-	years := make([]int, 6)
-	months := make([]string, 12)
+	months := getMonths()
 
-	if params.Period == "year" {
-		currentYear := time.Now().Year()
-		for i := 0; i < 6; i++ {
-			years[i] = currentYear - 5 + i
-		}
-	}
-
-	if params.Period == "month" {
-		months = []string{
-			"Январь",
-			"Февраль",
-			"Март",
-			"Арпель",
-			"Май",
-			"Июнь",
-			"Июль",
-			"Август",
-			"Сентябрь",
-			"Октбярь",
-			"Ноябрь",
-			"Декабрь",
-		}
-	}
+	years := getYears()
 
 	type Dataset struct {
 		Label           string `json:"label"`
@@ -110,6 +118,7 @@ func GetStatistic(w http.ResponseWriter, r *http.Request) {
 
 	groupedRecords := make(map[string]map[int]int)
 	colors := make(map[string]string)
+	var income, expense, profit, loss map[int]int
 
 	for _, record := range records {
 		title := record.Article.Title
@@ -129,6 +138,36 @@ func GetStatistic(w http.ResponseWriter, r *http.Request) {
 		}
 
 		groupedRecords[title][unit] += record.Amount
+
+		if params.Type == 0 {
+			if record.RecordTypeID == 1 {
+				if income == nil {
+					income = make(map[int]int)
+				}
+				income[unit] += record.Amount
+			} else if record.RecordTypeID == 2 {
+				if expense == nil {
+					expense = make(map[int]int)
+				}
+				expense[unit] += record.Amount
+			}
+		}
+	}
+
+	if params.Type == 0 {
+		profit = make(map[int]int)
+		loss = make(map[int]int)
+		for unit, incomeAmount := range income {
+			profit[unit] = incomeAmount - expense[unit]
+			loss[unit] = -profit[unit]
+		}
+
+		// Очищаем groupedRecords и добавляем только 4 датасета
+		groupedRecords = make(map[string]map[int]int)
+		groupedRecords["Доход"] = income
+		groupedRecords["Расход"] = expense
+		groupedRecords["Прибыль"] = profit
+		groupedRecords["Убыток"] = loss
 	}
 
 	var datasets []Dataset
@@ -149,10 +188,24 @@ func GetStatistic(w http.ResponseWriter, r *http.Request) {
 			amounts[i] = amountsByUnit[unit]
 		}
 
+		var backgroundColor string
+		switch title {
+		case "Доход":
+			backgroundColor = "green.500" // Зеленый цвет (можно заменить на нужный)
+		case "Расход":
+			backgroundColor = "red.500" // Красный цвет (можно заменить на нужный)
+		case "Прибыль":
+			backgroundColor = "blue.500" // Синий цвет (можно заменить на нужный)
+		case "Убыток":
+			backgroundColor = "orange.500" // Оранжевый цвет (можно заменить на нужный)
+		default:
+			backgroundColor = colors[title]
+		}
+
 		dataset := Dataset{
 			Label:           title,
 			Data:            amounts,
-			BackgroundColor: colors[title],
+			BackgroundColor: backgroundColor,
 		}
 		datasets = append(datasets, dataset)
 	}
@@ -162,16 +215,11 @@ func GetStatistic(w http.ResponseWriter, r *http.Request) {
 		Datasets []Dataset   `json:"datasets"`
 	}
 
+	labels := getLabels(params.Period, years, months)
+
 	data := Data{
+		Labels:   labels,
 		Datasets: datasets,
-	}
-
-	if params.Period == "year" {
-		data.Labels = years
-	}
-
-	if params.Period == "month" {
-		data.Labels = months
 	}
 
 	w.Write(toJson(data))
