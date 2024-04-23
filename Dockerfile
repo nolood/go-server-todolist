@@ -1,13 +1,18 @@
-FROM golang:1.21
+FROM golang:1.22 AS builder
 
 WORKDIR /app
 
-COPY go.mod .
+COPY . .
 
 RUN go mod tidy
 
-COPY . .
+RUN go build -o mm-rest-api .
 
-EXPOSE 5000
+FROM postgres:latest
 
-CMD ["go", "run", "main.go"]
+WORKDIR /usr/local/bin
+
+COPY --from=builder /app/mm-rest-api .
+COPY --from=builder /app/.env .
+
+CMD ["./mm-rest-api"]

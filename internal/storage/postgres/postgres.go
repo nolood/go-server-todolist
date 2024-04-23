@@ -26,7 +26,7 @@ func ConnectDb() {
 		QueryFields: true,
 	})
 	if err != nil {
-		config.Logger.Info(err.Error())
+		panic(fmt.Errorf("failed to connect database: %w", err))
 	}
 
 	err = Db.AutoMigrate(&User{}, &Article{}, &Record{}, &Bill{}, &RecordType{})
